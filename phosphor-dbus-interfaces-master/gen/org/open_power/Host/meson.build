@@ -1,0 +1,45 @@
+# Generated file; do not modify.
+generated_sources += custom_target(
+    'org/open_power/Host__cpp'.underscorify(),
+    input: [ '../../../../yaml/org/open_power/Host.errors.yaml',  ],
+    output: [ 'error.cpp', 'error.hpp',  ],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog, '--command', 'cpp',
+        '--output', meson.current_build_dir(),
+        '--tool', sdbusplusplus_prog,
+        '--directory', meson.current_source_dir() / '../../../../yaml',
+        'org/open_power/Host',
+    ],
+)
+
+subdir('Access')
+generated_others += custom_target(
+    'org/open_power/Host/Access__markdown'.underscorify(),
+    input: [ '../../../../yaml/org/open_power/Host/Access.errors.yaml',  ],
+    output: [ 'Access.md' ],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog, '--command', 'markdown',
+        '--output', meson.current_build_dir(),
+        '--tool', sdbusplusplus_prog,
+        '--directory', meson.current_source_dir() / '../../../../yaml',
+        'org/open_power/Host/Access',
+    ],
+)
+
+subdir('Boot')
+generated_others += custom_target(
+    'org/open_power/Host/Boot__markdown'.underscorify(),
+    input: [ '../../../../yaml/org/open_power/Host/Boot.errors.yaml',  ],
+    output: [ 'Boot.md' ],
+    depend_files: sdbusplusplus_depfiles,
+    command: [
+        sdbuspp_gen_meson_prog, '--command', 'markdown',
+        '--output', meson.current_build_dir(),
+        '--tool', sdbusplusplus_prog,
+        '--directory', meson.current_source_dir() / '../../../../yaml',
+        'org/open_power/Host/Boot',
+    ],
+)
+

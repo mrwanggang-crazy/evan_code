@@ -1,0 +1,138 @@
+description: >
+    Implement to manage VPD data in system.
+methods:
+    - name: WriteKeyword
+      description: >
+          A method to update the keyword value for a given VPD record.
+      parameters:
+          - name: path
+            type: object_path
+            description: >
+                Path to the D-Bus object that represents the FRU.
+          - name: record
+            type: string
+            description: >
+                Record whose keyword value needs to be modified.
+          - name: keyword
+            type: string
+            description: >
+                Keyword whose value needs to be updated.
+          - name: value
+            type: array[byte]
+            description: >
+                Value to be updated for the keyword.
+      errors:
+          - xyz.openbmc_project.Common.Error.InvalidArgument
+          - com.ibm.VPD.Error.PathNotFound
+          - com.ibm.VPD.Error.RecordNotFound
+          - com.ibm.VPD.Error.KeywordNotFound
+
+    - name: GetFRUsByUnexpandedLocationCode
+      description: >
+          A method to get list of FRU D-BUS object paths for a given unexpanded
+          location code.
+      parameters:
+          - name: locationCode
+            type: string
+            description: >
+                An un-expanded Location code.
+          - name: nodeNumber
+            type: uint16
+            description: >
+                Denotes the node in case of a multi-node configuration, ignored
+                on a single node system.
+      returns:
+          - name: inventoryList
+            type: array[object_path]
+            description: >
+                List of all the FRUs D-Bus object paths for the given location
+                code.
+      errors:
+          - xyz.openbmc_project.Common.Error.InvalidArgument
+          - com.ibm.VPD.Error.LocationNotFound
+          - com.ibm.VPD.Error.NodeNotFound
+
+    - name: GetFRUsByExpandedLocationCode
+      description: >
+          A method to get list of FRU D-BUS object paths for a given expanded
+          location code.
+      parameters:
+          - name: locationCode
+            type: string
+            description: >
+                Location code in expanded format.
+      returns:
+          - name: inventoryList
+            type: array[object_path]
+            description: >
+                List of all the FRUs D-Bus object path for the given location
+                code.
+      errors:
+          - xyz.openbmc_project.Common.Error.InvalidArgument
+          - com.ibm.VPD.Error.LocationNotFound
+          - com.ibm.VPD.Error.NodeNotFound
+
+    - name: GetExpandedLocationCode
+      description: >
+          An api to get expanded location code corresponding to a given
+          un-expanded location code. Expanded location codes gives the location
+          of the FRU in the system.
+      parameters:
+          - name: locationCode
+            type: string
+            description: >
+                Location code in un-expanded format.
+          - name: nodeNumber
+            type: uint16
+            description: >
+                Denotes the node in case of multi-node configuration. Ignored in
+                case of single node configuration.
+      returns:
+          - name: locationCode
+            type: string
+            description: >
+                Location code in expanded format.
+      errors:
+          - xyz.openbmc_project.Common.Error.InvalidArgument
+          - com.ibm.VPD.Error.LocationNotFound
+          - com.ibm.VPD.Error.NodeNotFound
+
+    - name: PerformVPDRecollection
+      description: >
+          An api to check for FRUs replaced and if required, perform
+          recollection of VPD data for them.
+      errors:
+          - xyz.openbmc_project.Common.Error.InvalidArgument
+
+    - name: DeleteFRUVPD
+      description: >
+          An api to delete VPD of a given FRU and set its Present property as
+          false on DBus. This api is to be called before requesting VPD parser
+          to collect VPD of any given FRU in case of concurrent maintenance.
+      parameters:
+          - name: inventoryPath
+            type: object_path
+            description: >
+                Dbus path of the FRU whose VPD needs to be removed.
+      errors:
+          - xyz.openbmc_project.Common.Error.InvalidArgument
+
+    - name: CollectFRUVPD
+      description: >
+          An api to collect VPD of a given FRU by launching the parser exe
+          asynchronously. It can be used to collect VPD of any given FRU in case
+          of concurrent maintenance. As a pre-requisite for this api,
+          DeleteFRUVPD api needs to be called for that particular FRU. As this
+          api makes async call to the parser, caller needs to register for
+          Present property change signal for that FRU on DBus to ensure
+          successful execution of VPD parser for that FRU. The caller is also
+          suggested to have a timer of around two mins at their end and in case
+          the present property is not set to true in that timeline, can mark the
+          call as failed.
+      parameters:
+          - name: inventoryPath
+            type: object_path
+            description: >
+                Dbus path of the FRU whose VPD needs to be collected.
+      errors:
+          - xyz.openbmc_project.Common.Error.InvalidArgument
